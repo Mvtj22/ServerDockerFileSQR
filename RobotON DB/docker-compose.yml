@@ -1,0 +1,20 @@
+version: '3'
+services:
+  app:
+    container_name: roboton-db
+    restart: always
+    build: .
+    ports:
+      - '3000:3000'
+    links:
+      - mongo
+  mongo:
+    image: mongo:4.2
+    container_name: mongo
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+    ports:
+        - 27017:27017
