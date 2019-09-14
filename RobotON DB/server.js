@@ -12,13 +12,50 @@ var cors = require('cors');
 
 app.use(cors());
 
+const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+    reconnectInterval: 1000 // Reconnect every 500ms
+}
 
 var url = "mongodb://mongo:27017/robo";
 
 //Intialize mongo
 mongoose.Promise = global.Promise;
-mongoose.connect(url, { useNewUrlParser: true });
-mongoose.set('useFindAndModify', false);
+var db = mongoose.connection;
+
+db.on('connecting', function() {
+console.log('connecting to MongoDB...');
+});
+
+db.on('error', function(error) {
+console.error('Error in MongoDb connection: ' + error);
+mongoose.disconnect();
+});
+db.on('connected', function() {
+    console.log('MongoDB connected!');
+});
+db.once('open', function() {
+    console.log('MongoDB connection opened!');
+});
+db.on('reconnected', function () {
+    console.log('MongoDB reconnected!');
+});
+db.on('disconnected', function() {
+    console.log('MongoDB disconnected!');
+});
+
+var connectWithRetry = function() {
+    return mongoose.connect(url,options, function(err) {
+      if (err) {
+        console.error('Failed to connect to mongo on startup - retrying in 5 sec', err);
+        setTimeout(connectWithRetry, 5000);
+      }
+    });
+  };
+connectWithRetry();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
