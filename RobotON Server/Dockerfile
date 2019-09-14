@@ -7,4 +7,4 @@ RUN npm install -g http-server
 COPY . /usr/src/app
 EXPOSE 8080
 
-CMD [ "http-server" ]
+CMD [ "http-server", "-p8080", "--cors='Access-Control-Allow-Origin: *'" ]
