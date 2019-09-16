@@ -1,25 +1,26 @@
 from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
-import time
-import json
-import csv
-import uuid
-# import flask
-# from flask import request, jsonify, Flask
+import time, json, csv, uuid,os
 import quart
-from quart import Quart, websocket, request, jsonify
+from quart import Quart, websocket, request, jsonify, redirect, flash
 from quart_cors import cors;
-import os
-
+from zipfile import ZipFile
+from werkzeug.utils import secure_filename
 
 static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Gidget")
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
 
+ALLOWED_EXTENSIONS = set(['csv', 'js'])
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+
 @app.route("/", methods=["GET"])
 def serve_dir_directory_index():
     return quart.send_from_directory(static_file_dir, "index.html")
-    #return Flask.send_from_directory(static_file_dir, "index.html")
 
 
 @app.route("/<path:path>", methods=["GET"])
@@ -30,6 +31,65 @@ def serve_file_in_dir(path):
 
     return quart.send_from_directory(static_file_dir, path)
 
+@app.route("/uploadCSVandStuff", methods=["GET", "POST"])
+async def serve_file_in_dir_csv():
+    if(request.method == 'POST'):
+        files = await request.files
+        if('file' not in files):
+            flash('No File part')
+            return redirect(request.url)
+        
+        file = files['file']
+        if(file.filename == ''):
+            flash("No selected file")
+            return redirect(request.url)
+
+        print(allowed_file(file.filename))
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(filename)
+            file.save(os.path.join(static_file_dir, filename))
+            return quart.Response("Success")
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+@app.route("/getAllData", methods=["GET"])
+def getData():
+    with ZipFile('GidgetData.zip','w') as zipObj:
+        for foldername,subfolders, filenames in os.walk("Gidget/results/"):
+            for filename in filenames:
+                filePath = os.path.join(foldername,filename)
+                zipObj.write(filePath, filePath[len("Gidget/results/") :])
+
+    #return quart.send_from_directory(static_file_dir, 'GidgetData.zip')
+    return quart.send_file('GidgetData.zip')
+
+@app.route("/deleteAllData", methods=["DELETE"])
+async def deleteAllData():
+    data = await request.get_data()
+    data2 = json.loads(data)
+    if(not(data2['passwordO'] == "RWnVD3kHTHRvRa" and
+        data2['passwordT'] == "RdD3!yC9Ytd6o6oGg3R*5siw2fnLSa#qq!%YEH4zgGo#xeaBdM%QFz4")):
+        return quart.Response("Bad Credential")
+
+    for foldername,subfolders, filenames in os.walk("Gidget/results/"):
+        for filename in filenames:
+            filePath = os.path.join(foldername,filename)
+            print(filePath)
+            try:
+                if os.path.isfile(filePath):
+                    os.remove(filePath)
+            except Exception as e:
+                print(e)
+    
+    return quart.Response("data has been deleted")
 
 @app.route("/saveData", methods=["POST"])
 async def postJsonHandler():
