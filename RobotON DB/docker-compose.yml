@@ -4,6 +4,12 @@ services:
     container_name: roboton-db
     restart: always
     build: .
+    env_file: .env
+    environment:
+    - MONGO_DB=$MONGO_DB
+    - DATABASE_URL=$DATABASE_URL
+    - DATABASE_PORT=$DATABASE_PORT
+    - PORT=$PORT
     ports:
       - '3000:3000'
     links:
