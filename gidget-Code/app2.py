@@ -16,12 +16,9 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
-
 @app.route("/", methods=["GET"])
 def serve_dir_directory_index():
     return quart.send_from_directory(static_file_dir, "index.html")
-
 
 @app.route("/<path:path>", methods=["GET"])
 def serve_file_in_dir(path):
@@ -30,6 +27,17 @@ def serve_file_in_dir(path):
         path = os.path.join(path, "index.html")
 
     return quart.send_from_directory(static_file_dir, path)
+
+@app.route("/runKmean", methods=["GET"])
+def run_kmean():
+    process = os.popen('cd Gidget && python kmeans.py')
+    outputs = process.read()
+    process.close()
+    return quart.Response(outputs)
+
+@app.route("/switchFlip", methods=["GET"])
+def switch_the_flip():
+    
 
 @app.route("/uploadCSVandStuff", methods=["GET", "POST"])
 async def serve_file_in_dir_csv():
