@@ -16,8 +16,7 @@ const {
   MONGO_DB,
   DATABASE_URL,
   DATABASE_PORT
-} = process.env;
-
+} = process.env
 const url = `mongodb://${DATABASE_URL}:${DATABASE_PORT}/${MONGO_DB}`;
 console.log(url);
 

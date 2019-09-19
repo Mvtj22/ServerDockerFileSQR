@@ -35,8 +35,8 @@ def run_kmean():
     process.close()
     return quart.Response(outputs)
 
-@app.route("/switchFlip", methods=["GET"])
-def switch_the_flip():
+# @app.route("/switchFlip", methods=["GET"])
+# def switch_the_flip():
     
 
 @app.route("/uploadCSVandStuff", methods=["GET", "POST"])
