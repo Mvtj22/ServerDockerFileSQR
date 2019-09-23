@@ -1,5 +1,5 @@
 //Server for the API calls for DB
-// The only security in this, is that noone is touch the DB, everything has to go through a API Call
+// The only security in this, is that no one is touch the DB, everything has to go through a API Call
 var express = require('express'),
 app = express(),
 mongoose = require('mongoose'),

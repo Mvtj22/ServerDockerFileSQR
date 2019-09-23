@@ -344,7 +344,7 @@ exports.check_word_ON = function(req,res){
         if(err){
           res.send(true);
         }else if(task){
-          res.send(true);
+          res.send(false);
         }else{
           res.send(false);
         }
@@ -657,7 +657,7 @@ exports.check_word_BUG = function(req,res){
         if(err){
           res.send(true);
         }else if(task){
-          res.send(true);
+          res.send(false);
         }else{
           res.send(false);
         }
