@@ -12,44 +12,19 @@ function onlyUnique(value, index, self){
 function sortJsonArrByPoints(a,b){
   return b.points - a.points;
 }
-
-const serverStatus = () => {
-  return { 
-     state: 'up', 
-     dbState: mongoose.STATES[mongoose.connection.readyState] 
-  }
-};
-
-exports.apiCheck = function(req,res){
-  var stats = {
-    state: 'up',
-    dbState: mongoose.STATES[mongoose.connection.readyState]
-  };
-  console.log(stats)
-  res.send(stats)
-}
-
 //-------------------------------EOF EXTERNAL FUNCTIONS!--------------------------------------->
+
 
 //GET REQUEST FOR ALL DATA UNDER ON
 exports.list_all_logs_ON = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }  
-  
-  Task.find({}, function(err, task) {
+    Task.find({}, function(err, task) {
         if (err)
-          res.status(500).send(err);
+          res.send(err);
         res.json(task);
-    });
+      });
 };
 
 exports.list_all_leaderboard_ON = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   var levelName = req.params.levelName
   console.log(levelName);
   Task.aggregate([
@@ -115,10 +90,6 @@ exports.list_all_leaderboard_ON = function(req,res){
 
 //Creates a new log for that sessionID
 exports.create_a_log_ON = function(req, res) {
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   var new_task = new Task(req.body);
   new_task.save(function(err, task) {
     if (err)
@@ -130,10 +101,6 @@ exports.create_a_log_ON = function(req, res) {
 
 //GET REQUEST FOR info Related to the SessionID
 exports.read_a_log_ON = function(req, res) {
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   Task.findOne({name: req.params.sessionID}, function(err, task) {
     if (err)
       res.send(err);
@@ -143,10 +110,6 @@ exports.read_a_log_ON = function(req, res) {
 
 //Update the log that is tied with the sessionID
 exports.update_a_log_ON = function(req, res) {
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   Task.findOneAndUpdate(
     {name: req.params.sessionID}, 
     {$push : {
@@ -163,10 +126,6 @@ exports.update_a_log_ON = function(req, res) {
 
 //Gets the retrieved list of completed level
 exports.retrieve_comp_level_ON = function(req, res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   var compLevel = [];
   var currentLevel;
   Task.findOne({name: req.params.sessionID}, function(err, task) {
@@ -195,10 +154,6 @@ exports.retrieve_comp_level_ON = function(req, res){
 
 //Updates the current level with the related info
 exports.put_current_level_ON = function(req, res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  } 
   var objName = req.params.name;
   var sessionID = req.params.sessionID.toString();
 
@@ -254,7 +209,7 @@ exports.put_current_level_ON = function(req, res){
         )
       }
     }
-    else if(req.body["totalPoint"] ||req.body["timeEnded"] || req.body["finalEnergy"] || req.body["progress"] || req.body["time"] || req.body["progress"] || req.body["points"] || req.body["timeBonus"]){
+    else if(req.body["failures"]||req.body["AdaptiveMode"]||req.body["HintMode"]||req.body["totalPoint"] ||req.body["timeEnded"] || req.body["finalEnergy"] || req.body["progress"] || req.body["time"] || req.body["progress"] || req.body["points"] || req.body["timeBonus"]){
       Task.updateOne(
         query,
         {$set : query1}, 
@@ -289,10 +244,6 @@ exports.put_current_level_ON = function(req, res){
 
 
 exports.retrieve_upgrade_points_ON = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-  }   
   var queryCl = {};
   var criteria = req.params.name;
   var criteria2 = "_id";
@@ -308,12 +259,7 @@ exports.retrieve_upgrade_points_ON = function(req,res){
 };
 
 exports.put_upgrade_points_ON = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }     
-  
-  var queryCl = {};
+    var queryCl = {};
     var criteria = req.params.name;
 
     queryCl[criteria] = req.body[ req.params.name];
@@ -330,10 +276,6 @@ exports.put_upgrade_points_ON = function(req,res){
 }
 
 exports.check_word_ON = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send(false)
-    }   
   var Filter = require('bad-words'),
     filter = new Filter();
 
@@ -344,7 +286,7 @@ exports.check_word_ON = function(req,res){
         if(err){
           res.send(true);
         }else if(task){
-          res.send(false);
+          res.send(true);
         }else{
           res.send(false);
         }
@@ -354,10 +296,6 @@ exports.check_word_ON = function(req,res){
 
 //------------------------------------------------------------------------------->
 exports.list_all_logs_BUG = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   TaskT.find({}, function(err, task) {
       if (err)
         res.send(err);
@@ -366,11 +304,6 @@ exports.list_all_logs_BUG = function(req,res){
 };
 
 exports.create_a_log_BUG = function(req, res) {
-  
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   var new_task = new TaskT(req.body);
   new_task.save(function(err, task) {
     if (err)
@@ -381,10 +314,6 @@ exports.create_a_log_BUG = function(req, res) {
 
 
 exports.read_a_log_BUG = function(req, res) {
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   TaskT.findOne({name: req.params.sessionID}, function(err, task) {
     if (err)
       res.send(err);
@@ -394,10 +323,6 @@ exports.read_a_log_BUG = function(req, res) {
 
 
 exports.update_a_log_BUG = function(req, res) {
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   TaskT.findOneAndUpdate({name: req.params.sessionID}, 
     {$push : {levels: req.body['levels']}}, 
     {new: true},
@@ -412,10 +337,6 @@ exports.update_a_log_BUG = function(req, res) {
 };
 
 exports.retrieve_comp_level_BUG = function(req, res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   var compLevel = [];
   var currentLevel;
   TaskT.findOne({name: req.params.sessionID}, function(err, task) {
@@ -444,10 +365,6 @@ exports.retrieve_comp_level_BUG = function(req, res){
 
 //Updates the current level with the related info
 exports.put_current_level_BUG = function(req, res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   var objName = req.params.name;
   var sessionID = req.params.sessionID.toString();
 
@@ -501,7 +418,7 @@ exports.put_current_level_BUG = function(req, res){
         )
       }
     }
-    else if(req.body["totalPoint"] ||req.body["timeEnded"] || req.body["finalEnergy"] || req.body["progress"] || req.body["time"] || req.body["progress"] || req.body["points"] || req.body["timeBonus"]){
+    else if(req.body["failures"]||req.body["AdaptiveMode"]||req.body["HintMode"]||req.body["totalPoint"] ||req.body["timeEnded"] || req.body["finalEnergy"] || req.body["progress"] || req.body["time"] || req.body["progress"] || req.body["points"] || req.body["timeBonus"]){
       TaskT.updateOne(
         query,
         {$set : query1}, 
@@ -535,10 +452,6 @@ exports.put_current_level_BUG = function(req, res){
 };
 
 exports.retrieve_upgrade_points_BUG = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   var queryCl = {};
   var criteria = req.params.name;
   var criteria2 = "_id";
@@ -554,11 +467,7 @@ exports.retrieve_upgrade_points_BUG = function(req,res){
 };
 
 exports.put_upgrade_points_BUG = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
-  var queryCl = {};
+    var queryCl = {};
     var criteria = req.params.name;
 
     queryCl[criteria] = req.body[ req.params.name];
@@ -575,10 +484,6 @@ exports.put_upgrade_points_BUG = function(req,res){
 }
 
 exports.list_all_leaderboard_BUG = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send("Database Issue")
-    }   
   var levelName = req.params.levelName
   console.log(levelName);
   TaskT.aggregate([
@@ -643,10 +548,6 @@ exports.list_all_leaderboard_BUG = function(req,res){
 }
 
 exports.check_word_BUG = function(req,res){
-  if(mongoose.connection.readyState == 0 ||
-    mongoose.connection.readyState == 3){
-      res.status(500).send(false)
-    }   
   var Filter = require('bad-words'),
     filter = new Filter();
 
@@ -657,7 +558,7 @@ exports.check_word_BUG = function(req,res){
         if(err){
           res.send(true);
         }else if(task){
-          res.send(false);
+          res.send(true);
         }else{
           res.send(false);
         }

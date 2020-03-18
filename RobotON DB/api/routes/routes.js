@@ -2,8 +2,6 @@
 //The api routes
 module.exports = function(app){
     var logControl = require('../controllers/controller');
-    app.route('/logsON/api/status').get(logControl.apiCheck,require('express-healthcheck'));
-
 
     //A Get Request will show all the information stored on the DB
     //A Post Request will start the new session for a USER

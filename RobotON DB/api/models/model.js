@@ -34,6 +34,9 @@
         totalPoint: String,
         timeBonus: String,
         finalEnergy: String,
+	AdaptiveMode: String,
+        HintMode: String,
+        failures: String,
         tools :[{
             name: String,
             correctLine: String,

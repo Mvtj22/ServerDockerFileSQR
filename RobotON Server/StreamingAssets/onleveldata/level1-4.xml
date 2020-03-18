@@ -17,8 +17,8 @@ using namespace std;
 int main {
 	<comment type="description" correct="false"  groupid="3">FLOAT variables are capable of flying like an airplane or zeppelin.</comment>
 	<comment type="description" correct="true"  groupid="0">FLOAT variables store numbers with decimal points.</comment>
-	float half = 0.5;
-	float three = 3.0;
+	float additional_volume = 0.5;
+	float current_volume = 3.0;
 	
 	<question text="What is the value of sum?
 	Select your answer: " options="3,3.5,4" answer="3.5">float sum = half + three;</question>
