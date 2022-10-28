@@ -1,26 +1,27 @@
-version: '3'
+version: '3.9'
 services:
-  app:
-    container_name: roboton-db
+  #MongoDB service
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
     restart: always
-    build: .
-    env_file: .env
-    environment:
-    - MONGO_DB=$MONGO_DB
-    - DATABASE_URL=$DATABASE_URL
-    - DATABASE_PORT=$DATABASE_PORT
-    - PORT=$PORT
     ports:
-      - '3000:3000'
-    links:
-      - mongo
-  mongo:
-    image: mongo:4.2
-    container_name: mongo
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
+      - 2717:27017
     volumes:
-      - ./data/db:/data/db
+      - mongo_db:/data/db
+
+# Node API service
+  api:
+    build: .
     ports:
-        - 27017:27017
+      - 3000:3000
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://mongo_db:27017
+      DB_NAME: my_db
+      NAME: Mario
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}
