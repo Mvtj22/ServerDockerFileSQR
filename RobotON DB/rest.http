@@ -1,4 +1,4 @@
-lo###Get a list of all BUG Logs
+### Gets a list of all BUG Logs
 GET http://localhost:3000/logsBUG
 
 ### Create a lvl log at the start of the lvl
