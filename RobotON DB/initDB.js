@@ -6,7 +6,9 @@ module.exports = () => {
       dbName: process.env.DB_NAME,
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false
+      useFindAndModify: false,
+      reconnectTries: Number.MAX_VALUE, // Never stop trying to reconnect
+      reconnectInterval: 1000 // Reconnect every 1000ms
     })
     .then(() => {
       console.log('Mongodb connected....');
