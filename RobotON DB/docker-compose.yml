@@ -13,6 +13,7 @@ services:
 # Node API service
   api:
     build: .
+    container_name: api_container
     ports:
       - 3000:3000
     environment:
